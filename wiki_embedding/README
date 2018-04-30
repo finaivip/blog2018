@@ -1,0 +1,32 @@
+词向量在NLP的很多问题中扮演了非常重要的角色，比如文本分类，阅读理解，情感识别等问题。本文从实际代码的角度展示了如何快速实现一个词向量的训练过程。
+1.  环境准备
+本文是在mac上完成的，python3, 内存16G，Intel Core i7处理器；
+需要安装的python库：genism, jieba等；
+2.  语料处理
+我们使用维基百科上的中文语料进行训练，其他自己准备的预料原理一样。
+2.1 语料下载
+下载的地址为：https://dumps.wikimedia.org/zhwiki/latest/zhwiki-latest-pages-articles.xml.bz2 下载下来大概1.4G。注意下载后不需要解压，我们将使用gensim.corpora中的WikiCorpus对预料进行处理，直接提取到里面的文本内容。
+2.2 将xml转换成text
+python3 01_preprocess.py zhwiki-latest-pages-articles.xml.bz2 wiki.zh.txt
+该步我的机器花了15分钟，生成的wiki.zh.txt文件大概1.0G左右。
+注意：该步将每篇文章转换成了一行文本。
+2.3 将繁体转换成简体
+由于预料中有很多繁体字，需要转换成简体字。使用OpenCC进行转换。安装方式为：
+git clone https://github.com/BYVoid/OpenCC.git make PREFIX=/usr/local 
+sudo make PREFIX=/usr/local install
+
+   执行命令：opencc -i wiki.zh.txt -o wiki.zh.simp.txt -c t2s.json
+大概会处理1-2分钟，生成的wiki.zh.simp.txt仍然为1.0G左右，使用less wiki.zh.simp.txt查看全部为简体中文的文本；
+2.4 结巴分词
+注意：2.1-2.3是针对wiki语料的步骤，如果是自己准备的语料，还需要确保标点符号、停用词等；该步骤读取每行文本进行分词，大概要处理行文本。
+python3 02_split_by_jieba.py
+这一步的时间稍微长点，大概40分钟，生成文件wiki.zh.simp.seg.txt，大小大概1.2G。通过less wiki.zh.simp.seg.txt查看分词后的内容。
+3.  模型训练
+python3 03_train_word2vec_model.py
+我的机器大概训练了15分钟，生成了4个文件：wiki.zh.text.model模型文件48M，wiki.zh.text.vector词向量文件1.4G，量外两个文件wiki.zh.text.model.syn1neg.npy， wiki.zh.text.model.wv.syn0.npy，分别有594M。
+4.  模型测试
+python3 04_model_test.py
+计算出和词组最相近的其他词语。
+
+
+本代码参考：https://github.com/AimeeLee77/wiki_zh_word2vec，在此表示感谢。
