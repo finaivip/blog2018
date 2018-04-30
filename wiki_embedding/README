@@ -33,5 +33,7 @@
    python3 04_model_test.py
    计算出和词组最相近的其他词语。
 
+训练出的模型和词向量下载地址：百度云盘 https://pan.baidu.com/s/1xJ6ICxcg954ad3kh1D3NYQ 密码: frpr
+
 
 本代码参考：https://github.com/AimeeLee77/wiki_zh_word2vec，在此表示感谢。
